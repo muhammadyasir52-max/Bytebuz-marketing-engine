@@ -14,7 +14,7 @@ import { BrandTone, EmojiUsage } from '@/types';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import OnboardingProgress from '@/components/onboarding/OnboardingProgress';
-import TagInput from '@/components/common/TagInput';
+import TagInput from '@/components/onboarding/TagInput';
 
 const COLORS = {
   background: '#0A0A1A',
@@ -91,7 +91,7 @@ export default function Step3Screen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-      <OnboardingProgress step={3} total={7} />
+      <OnboardingProgress currentStep={3} totalSteps={7} />
 
       <ScrollView
         style={styles.scroll}
@@ -204,7 +204,7 @@ export default function Step3Screen() {
           <TagInput
             label="Words/phrases to AVOID"
             tags={wordsToAvoid}
-            onChangeTags={setWordsToAvoid}
+            onTagsChange={setWordsToAvoid}
             maxTags={20}
             placeholder="Type a word and press enter"
             hint="e.g. synergy, leverage, circle back"

@@ -6,45 +6,29 @@ export const HOOK_TYPE_DEFINITIONS: Record<
   HookType,
   { name: string; formula: string; description: string; example: string }
 > = {
-  question: {
-    name: 'Question Hook',
-    formula: 'Ask a provocative or relatable question that your audience CANNOT ignore.',
+  controversial_opinion: {
+    name: 'Controversial Opinion Hook',
+    formula: 'State a bold, polarizing opinion about your industry that most people are afraid to say.',
     description:
-      'Opens with a question that creates curiosity or addresses a core pain point. Forces mental engagement because readers instinctively answer questions in their head.',
+      'Opens with a strong, divisive stance on a topic in your niche. Forces readers to engage — either to agree enthusiastically or defend the opposite view. Creates immediate emotional investment and comment-worthy content.',
     example:
-      'What if everything you\'ve been told about [topic] is wrong?\nWhat would your life look like if you never had to worry about [pain point] again?',
+      'The [popular belief] is holding [audience] back — and most experts won\'t tell you why.\nHot take: [common industry practice] is actually the worst thing you can do for [goal].',
   },
-  bold_statement: {
-    name: 'Bold Statement Hook',
-    formula: 'Make a confident, surprising, or controversial claim that stops the scroll.',
+  surprising_stat: {
+    name: 'Surprising Statistic Hook',
+    formula: '[Shocking number/percentage] + [what it reveals about the reader\'s world].',
     description:
-      'Opens with an audacious declaration that challenges conventional wisdom or promises a strong opinion. Creates immediate intrigue and signals confidence.',
-    example:
-      'Most [professionals] are wasting 80% of their [resource].\nThe [popular belief] is a lie — and here\'s what actually works.',
-  },
-  statistic: {
-    name: 'Statistic Hook',
-    formula: '[Surprising number/percentage] + [what it reveals about the reader\'s world].',
-    description:
-      'Leads with a striking data point that reframes the reader\'s understanding. Numbers create instant credibility and pattern-interrupt the scroll.',
+      'Leads with a striking data point that reframes the reader\'s understanding. Numbers create instant credibility and pattern-interrupt the scroll. The stat must be genuinely surprising, not commonly known.',
     example:
       '73% of [target audience] struggle with [problem] — but almost nobody talks about why.\n$[amount] is left on the table every year by [audience] who don\'t know this strategy.',
   },
-  story_open: {
-    name: 'Story Open Hook',
-    formula: 'Start mid-scene with a vivid, specific moment that creates immediate curiosity.',
+  relatable_story: {
+    name: 'Relatable Story Hook',
+    formula: 'Start mid-scene with a vivid, specific moment that the audience has lived or deeply understands.',
     description:
-      'Drops the reader into a narrative at the most compelling point. Human brains are wired for story — this hook bypasses resistance and creates emotional investment.',
+      'Opens with a specific, authentic narrative moment that the audience immediately recognizes from their own experience. Human brains are wired for story — this hook bypasses resistance and creates emotional investment.',
     example:
-      'I was [specific situation] when everything changed.\nThree years ago, I had [problem]. Today, I [transformation]. Here\'s exactly what happened.',
-  },
-  contrarian: {
-    name: 'Contrarian Hook',
-    formula: 'Challenge a widely-held belief in your niche with a confident counter-position.',
-    description:
-      'Positions the content against mainstream advice or conventional wisdom. Creates intellectual tension that compels the audience to keep reading to understand the argument.',
-    example:
-      'Stop [common advice everyone gives]. It\'s killing your [result].\nThe [popular strategy] doesn\'t work. Here\'s what actually does.',
+      'I was sitting at my desk at [time] wondering why [relatable struggle] — sound familiar?\nIt was [specific moment] when I finally realized I had been doing [thing] completely wrong.',
   },
   how_to: {
     name: 'How-To Hook',
@@ -52,23 +36,39 @@ export const HOOK_TYPE_DEFINITIONS: Record<
     description:
       'Promises a specific, actionable outcome. Extremely direct and clear about the value being delivered. Works because it removes ambiguity about what the reader will gain.',
     example:
-      'How to [get result] without [common struggle] — even if [objection].\nHow I [achieved goal] in [timeframe] with [specific method].',
+      'How to [get result] without [common struggle] — even if [objection].\nHow I [achieved goal] in [timeframe] with [specific method] (no [common excuse] needed).',
   },
-  list: {
-    name: 'List Hook',
+  listicle: {
+    name: 'Listicle Hook',
     formula: '[Number] [things/ways/mistakes/secrets] that [relevant group] need to know about [topic].',
     description:
-      'Sets clear expectations with a numbered promise. Lists signal digestibility and create a completion loop in the reader\'s mind — they want to see all N items.',
+      'Sets clear expectations with a numbered promise. Lists signal digestibility and create a completion loop in the reader\'s mind — they want to see all N items. Works across every platform.',
     example:
-      '5 mistakes that are costing [audience] their [goal].\n7 things I wish I knew before [experience] — #3 changed everything.',
+      '5 mistakes that are costing [audience] their [goal] (I made all of them).\n7 things top [professionals] do differently — #4 surprised everyone I\'ve told.',
   },
-  secret: {
-    name: 'Secret/Insider Hook',
-    formula: 'The [hidden truth/secret/method] that [experts/insiders] use but never share.',
+  question: {
+    name: 'Question Hook',
+    formula: 'Ask a provocative or relatable question that your audience CANNOT ignore.',
     description:
-      'Positions the content as exclusive, insider knowledge. Activates the reader\'s fear of missing out and their desire for an unfair advantage over peers.',
+      'Opens with a question that creates curiosity or addresses a core pain point. Forces mental engagement because readers instinctively answer questions in their head before continuing.',
     example:
-      'The secret that top [professionals] use (and never talk about publicly).\nWhat [authority figure] won\'t tell you about [topic].',
+      'What if everything you\'ve been told about [topic] is wrong?\nWhat would your [business/life] look like if you could [desired outcome] without [main obstacle]?',
+  },
+  bold_claim: {
+    name: 'Bold Claim Hook',
+    formula: 'Make a confident, surprising, or counter-intuitive claim that stops the scroll instantly.',
+    description:
+      'Opens with an audacious declaration that challenges conventional wisdom or promises a strong opinion. Creates immediate intrigue, signals confidence, and demands that the reader find out if it\'s true.',
+    example:
+      'Most [professionals] are wasting 80% of their [resource] on the wrong things.\nThe [popular advice] is a myth — and following it is costing you [specific result].',
+  },
+  pattern_interrupt: {
+    name: 'Pattern Interrupt Hook',
+    formula: 'Break the expected format, structure, or content norms in a way that stops the eye and mind.',
+    description:
+      'Uses unexpected formatting, an unconventional opening, or a jarring contrast to jolt the reader out of mindless scrolling. Works at the structural and visual level, not just the content level.',
+    example:
+      'I quit.\n[Then explain the context]\n\nOr: Three things I\'d never tell a client:\n1. [Unexpected truth]\n2. [Unexpected truth]\n3. [Unexpected truth]',
   },
 };
 

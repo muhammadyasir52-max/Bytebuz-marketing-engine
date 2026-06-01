@@ -12,7 +12,7 @@ import { useBusinessStore } from '@/store/useBusinessStore';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import OnboardingProgress from '@/components/onboarding/OnboardingProgress';
-import TagInput from '@/components/common/TagInput';
+import TagInput from '@/components/onboarding/TagInput';
 
 const COLORS = {
   background: '#0A0A1A',
@@ -62,7 +62,7 @@ export default function Step2Screen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-      <OnboardingProgress step={2} total={7} />
+      <OnboardingProgress currentStep={2} totalSteps={7} />
 
       <ScrollView
         style={styles.scroll}
@@ -96,7 +96,7 @@ export default function Step2Screen() {
             <TagInput
               label="Their top pain points *"
               tags={painPoints}
-              onChangeTags={(tags) => {
+              onTagsChange={(tags) => {
                 setPainPoints(tags);
                 if (errors.painPoints) setErrors((p) => ({ ...p, painPoints: '' }));
               }}

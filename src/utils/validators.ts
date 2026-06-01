@@ -4,8 +4,6 @@ import {
   ContentType,
   HookType,
   ContentFramework,
-  PostStatus,
-  AnalyticsPeriod,
 } from '@/types';
 
 // ─── Reusable Field Validators ────────────────────────────────────────────────
@@ -46,7 +44,7 @@ const contentFrameworkEnum = z.enum(['AIDA', 'PAS', 'BAB', 'PPPP'] as const);
 const postStatusEnum = z.enum([
   'draft',
   'scheduled',
-  'published',
+  'posted',
   'failed',
   'deleted',
 ] as const);

@@ -1,8 +1,6 @@
 import {
   BusinessProfile,
   SocialPlatform,
-  ContentFramework,
-  HookType,
 } from '@/types';
 import { GeneratePostParams, GenerateVideoScriptParams, GenerateSEOParams } from './claudeService';
 import {
@@ -34,11 +32,7 @@ export function buildSystemPrompt(profile: BusinessProfile): string {
       ? profile.competitors
           .map(
             (c) =>
-              `  - ${c.name}${c.handle ? ` (${c.handle})` : ''}: ${c.differentiationNotes}${
-                c.weaknesses && c.weaknesses.length > 0
-                  ? `\n    Weaknesses to exploit: ${c.weaknesses.join(', ')}`
-                  : ''
-              }`
+              `  - @${c.handle} on ${c.platform}: ${c.notes}`
           )
           .join('\n')
       : '  None specified.';
@@ -48,9 +42,9 @@ export function buildSystemPrompt(profile: BusinessProfile): string {
       ? profile.goals
           .map(
             (g) =>
-              `  - ${g.type.replace(/_/g, ' ').toUpperCase()}: ${g.kpi}${
-                g.target ? ` (Target: ${g.target})` : ''
-              }${g.timeframe ? ` by ${g.timeframe}` : ''}`
+              `  - ${g.type.replace(/_/g, ' ').toUpperCase()}: ${g.description}${
+                g.kpiTarget ? ` (Target: ${g.kpiTarget})` : ''
+              }`
           )
           .join('\n')
       : '  General business growth and audience engagement.';
@@ -80,26 +74,8 @@ export function buildSystemPrompt(profile: BusinessProfile): string {
           .join('\n')}`
       : '';
 
-  const personalitySection =
-    profile.brandVoice.personalityTraits && profile.brandVoice.personalityTraits.length > 0
-      ? `\nBrand personality traits: ${profile.brandVoice.personalityTraits.join(', ')}`
-      : '';
-
-  const interestsSection =
-    profile.targetAudience.interests && profile.targetAudience.interests.length > 0
-      ? `\n  Interests & Hobbies: ${profile.targetAudience.interests.join(', ')}`
-      : '';
-
-  const locationSection = profile.targetAudience.location
-    ? `\n  Location: ${profile.targetAudience.location}`
-    : '';
-
-  const ageSection = profile.targetAudience.ageRange
-    ? `\n  Age Range: ${profile.targetAudience.ageRange}`
-    : '';
-
-  const websiteSection = profile.website
-    ? `\nWebsite: ${profile.website}`
+  const websiteSection = profile.websiteUrl
+    ? `\nWebsite: ${profile.websiteUrl}`
     : '';
 
   return `You are an elite social media marketing strategist and copywriter working for ${profile.businessName}.
@@ -117,7 +93,7 @@ Active Platforms: ${platformList}
 TARGET AUDIENCE
 ═══════════════════════════════════════════════
 
-Demographics: ${profile.targetAudience.demographic}${ageSection}${locationSection}${interestsSection}
+Demographics: ${profile.targetAudience.primaryDemographic}
 
 Core Pain Points:
 ${painPointsList}
@@ -134,13 +110,13 @@ BRAND VOICE & STYLE
 Tone: ${toneList}
 Writing Style: ${profile.brandVoice.writingStyle}
 Emoji Policy: ${emojiPolicy}
-Words/Phrases to NEVER Use: ${wordsToAvoid}${personalitySection}${exampleContentSection}
+Words/Phrases to NEVER Use: ${wordsToAvoid}${exampleContentSection}
 
 ═══════════════════════════════════════════════
 COMPETITIVE LANDSCAPE
 ═══════════════════════════════════════════════
 
-Key Competitors & Differentiation:
+Key Competitors & Notes:
 ${competitorSection}
 
 ${profile.businessName}'s Unique Positioning: Position ALL content to emphasize what makes ${profile.businessName} different and better than the competition above.
@@ -212,22 +188,22 @@ At least 2–3 keywords should appear in the hook or first paragraph.`
       : '';
 
   const contentTypeGuidance: Record<string, string> = {
-    educational:
-      'Focus on teaching a specific, actionable insight. Readers should learn something genuinely useful. Show your expertise without being preachy.',
-    promotional:
-      'Promote value-first. Lead with the benefit, not the product. The offer should feel like a natural conclusion to compelling content.',
-    storytelling:
-      'Tell a real story with a clear arc: situation → conflict → resolution → insight. Specificity makes stories believable.',
-    engagement:
-      'Optimize for comments and shares. Ask thought-provoking questions. Create content that invites discussion.',
-    behind_the_scenes:
-      'Show the human side. Authenticity over polish. Let the audience see the process, the person, the reality.',
-    user_generated:
-      'Create a prompt or template that encourages audience participation and content creation.',
-    case_study:
-      'Present real results with before/after data. Specificity builds credibility. Include methodology.',
-    thought_leadership:
-      'Share a bold, original perspective on an industry topic. Take a clear stance. Challenge conventional wisdom when warranted.',
+    text_post:
+      'Create a compelling text-only post optimized for reading engagement and sharing.',
+    carousel:
+      'Write content designed for a carousel format — each section should be a slide. Lead with a powerful cover slide hook.',
+    image_post:
+      'Write a caption that complements a strong visual. The image does the heavy lifting; the caption provides context and CTA.',
+    video_script:
+      'Write content structured for video delivery — natural spoken language, clear pacing, strong visual hooks.',
+    story:
+      'Create short, punchy content for story format — immediate engagement, tap-friendly structure, strong first frame.',
+    thread:
+      'Structure as a multi-part thread — each segment delivers standalone value but creates a reason to keep reading.',
+    seo_article:
+      'Create keyword-optimized, comprehensive content that serves search intent while maintaining brand voice.',
+    reel_script:
+      'Write a high-energy, fast-paced script for a short-form vertical video. Hook in the first 3 seconds is critical.',
   };
 
   const contentTypeGuide =
@@ -297,23 +273,28 @@ Return exactly 3 variants with this structure:
 {
   "variants": [
     {
-      "variantNumber": 1,
       "hook": "The complete opening hook text",
       "body": "The complete body content following the ${params.framework} framework",
-      "cta": "The specific call-to-action",
+      "callToAction": "The specific call-to-action",
       "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
-      "viralityScore": 85,
-      "wordCount": 150,
-      "charCount": 850,
-      "differentiator": "One sentence explaining what makes this variant unique"
+      "estimatedEngagementScore": 85,
+      "whyItWorks": "One sentence explaining what makes this variant effective and unique"
     },
     {
-      "variantNumber": 2,
-      ...
+      "hook": "...",
+      "body": "...",
+      "callToAction": "...",
+      "hashtags": [],
+      "estimatedEngagementScore": 80,
+      "whyItWorks": "..."
     },
     {
-      "variantNumber": 3,
-      ...
+      "hook": "...",
+      "body": "...",
+      "callToAction": "...",
+      "hashtags": [],
+      "estimatedEngagementScore": 78,
+      "whyItWorks": "..."
     }
   ]
 }
@@ -325,7 +306,7 @@ VARIANT DIFFERENTIATION REQUIREMENTS:
 
 Each variant must be substantively different — different hooks, different body angles, different CTAs. They should NOT be minor rewrites of each other.
 
-viralityScore: Rate each variant from 1–100 based on estimated engagement potential (scroll-stopping power + value delivery + CTA clarity).
+estimatedEngagementScore: Rate each variant from 1–100 based on estimated engagement potential (scroll-stopping power + value delivery + CTA clarity).
 
 hashtags: Include WITHOUT the # symbol. The formatter will add them.`;
 }
@@ -339,6 +320,9 @@ export function buildVideoScriptPrompt(params: GenerateVideoScriptParams): strin
   const emotionGuidance = params.targetEmotion
     ? `\nTarget Emotion to Evoke: ${params.targetEmotion}\nEvery section of the script should build toward or reinforce this emotional state.`
     : '';
+
+  const sceneCount = Math.max(2, Math.round(params.durationSeconds / 15));
+  const avgSceneDuration = Math.round(params.durationSeconds / (sceneCount + 2)); // +2 for hook + cta
 
   return `VIDEO SCRIPT GENERATION REQUEST
 ══════════════════════════════════════════════════
@@ -357,39 +341,32 @@ Format Tips:
 ${viralityRules.formatTips.map((t) => `• ${t}`).join('\n')}
 
 SCRIPT REQUIREMENTS:
-• Total duration must be achievable in exactly ${params.durationSeconds} seconds
+• Total duration must fit within ${params.durationSeconds} seconds
 • Speaking pace: ~150 words per minute for natural delivery
 • Estimated word budget: ${Math.round((params.durationSeconds / 60) * 150)} words for spoken content
 • Hook must create compelling reason to keep watching in the first ${params.platform === 'youtube' ? '30 seconds' : '3 seconds'}
-• Include specific visual direction notes for each section (b-roll, text overlays, transitions)
-• Body segments should each deliver one clear, valuable idea
+• Include specific visual direction for each scene (b-roll, text overlays, transitions)
+• Each scene delivers exactly ONE clear, valuable idea
 • CTA must be specific and frictionless
+• Approximate scene duration: ~${avgSceneDuration} seconds each
 
 OUTPUT FORMAT — Return ONLY valid JSON:
 
 {
-  "title": "Compelling video title optimized for platform search",
-  "hook": "Word-for-word script for the hook section (first ${params.platform === 'youtube' ? '15-30' : '3-5'} seconds)",
-  "intro": "Word-for-word script for the intro/setup section",
-  "body": [
-    "Segment 1: Complete script text for this section",
-    "Segment 2: Complete script text for this section",
-    "Segment 3: Complete script text for this section"
+  "hook": "Word-for-word script for the hook section (first ${params.platform === 'youtube' ? '15–30' : '2–3'} seconds)",
+  "scenes": [
+    {
+      "duration": ${avgSceneDuration},
+      "visualDescription": "Specific b-roll or visual direction for this scene",
+      "voiceover": "Word-for-word spoken script for this scene",
+      "onScreenText": "Optional text overlay for this scene"
+    }
   ],
   "cta": "Word-for-word call to action script",
-  "outro": "Closing words to end the video",
-  "totalDurationSeconds": ${params.durationSeconds},
-  "visualNotes": [
-    "Hook: [specific visual direction]",
-    "Intro: [specific visual direction]",
-    "Segment 1: [b-roll or visual suggestion]",
-    "Segment 2: [b-roll or visual suggestion]",
-    "Segment 3: [b-roll or visual suggestion]",
-    "CTA: [visual direction for call to action]",
-    "Outro: [closing visual]"
-  ],
-  "captions": "First 100 characters of optimized caption/description for the platform"
-}`;
+  "totalDurationSeconds": ${params.durationSeconds}
+}
+
+Generate ${sceneCount} scenes in the scenes array. Each scene must have a duration that makes the total approximately ${params.durationSeconds} seconds.`;
 }
 
 // ─── Weekly Strategy Prompt ───────────────────────────────────────────────────
@@ -405,18 +382,8 @@ export function buildStrategyPrompt(
 
   const goalsForStrategy = profile.goals
     .slice(0, 3)
-    .map((g) => `• ${g.type.replace(/_/g, ' ')}: ${g.kpi}`)
+    .map((g) => `• ${g.type.replace(/_/g, ' ')}: ${g.description}`)
     .join('\n');
-
-  const contentTypeOptions = [
-    'educational',
-    'promotional',
-    'storytelling',
-    'engagement',
-    'behind_the_scenes',
-    'case_study',
-    'thought_leadership',
-  ].join(', ');
 
   return `WEEKLY CONTENT STRATEGY REQUEST
 ══════════════════════════════════════════════════
@@ -435,47 +402,42 @@ Generate a comprehensive 7-day content strategy calendar that:
 OUTPUT FORMAT — Return ONLY valid JSON:
 
 {
-  "weekStartDate": "YYYY-MM-DD (use next Monday's date)",
-  "theme": "Overarching theme that ties the week together",
-  "focusGoal": "Primary business goal this week's content serves",
-  "keyMessages": [
-    "Core message 1 to reinforce all week",
-    "Core message 2 to reinforce all week",
-    "Core message 3 to reinforce all week"
-  ],
-  "pillars": [
+  "focusTheme": "Overarching theme that ties the week together",
+  "boldMove": "One big, bold strategy move for this week that could significantly accelerate growth",
+  "generatedAt": "${new Date().toISOString()}",
+  "calendarItems": [
     {
-      "name": "Content pillar name",
-      "percentage": 40,
-      "description": "What this pillar covers and why it matters",
-      "contentTypes": ["educational", "thought_leadership"]
-    }
-  ],
-  "contentMix": [
-    {
-      "type": "educational",
-      "percentage": 35,
-      "rationale": "Why this percentage makes sense for the goals"
-    }
-  ],
-  "schedule": [
-    {
-      "dayOfWeek": 1,
+      "day": "Monday",
       "platform": "${profile.activePlatforms[0] || 'instagram'}",
-      "contentType": "educational",
+      "contentType": "text_post",
       "topic": "Specific topic idea for this post",
-      "bestTimeToPost": "09:00",
-      "hookSuggestion": "Opening hook concept for this post"
+      "suggestedTime": "09:00"
+    }
+  ],
+  "insights": [
+    {
+      "id": "insight-1",
+      "insight": "Key insight about the audience or market this week",
+      "recommendation": "Specific action based on this insight"
+    }
+  ],
+  "actionItems": [
+    {
+      "id": "action-1",
+      "title": "Action item title",
+      "description": "What to do and how",
+      "impact": "high",
+      "completed": false
     }
   ]
 }
 
 STRATEGY REQUIREMENTS:
 • Include at least one post for each active platform: ${platformList}
-• Schedule 5–7 posts across the week (not every day for every platform)
-• bestTimeToPost should be platform-optimized (Instagram: 9am, 12pm, 7pm; LinkedIn: Tue-Thu 8-10am; TikTok: 7-9pm; Twitter: 8am, 12pm, 5pm)
+• Schedule 5–7 posts across the week
+• suggestedTime should be platform-optimized
 • Ensure 70% value content, 20% engagement content, 10% promotional content
-• dayOfWeek: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday`;
+• Include 3 insights and 5 actionItems`;
 }
 
 // ─── SEO Content Prompt ───────────────────────────────────────────────────────
@@ -517,7 +479,6 @@ SEO REQUIREMENTS:
 • Add internal linking suggestions (note with [INTERNAL LINK: topic])
 • Include 1–2 outbound authority link suggestions (note with [EXTERNAL LINK: topic])
 • Optimize for featured snippets where relevant (use definition boxes, numbered lists)
-• Include structured data suggestions in comments
 
 BRAND VOICE:
 Maintain ${profile.businessName}'s brand voice throughout: ${profile.brandVoice.tone.join(', ')} tone with ${profile.brandVoice.writingStyle} writing style.

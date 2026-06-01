@@ -47,12 +47,6 @@ export interface GenerateSEOParams {
   searchIntent: 'informational' | 'transactional' | 'navigational';
 }
 
-interface SSEEvent {
-  type: string;
-  delta?: { type: string; text: string };
-  error?: { type: string; message: string };
-}
-
 // ─── Claude Service ───────────────────────────────────────────────────────────
 
 export class ClaudeService {
@@ -107,7 +101,7 @@ export class ClaudeService {
     if (!response.ok) {
       let errorMessage = `Claude API error: ${response.status} ${response.statusText}`;
       try {
-        const errorBody = await response.json();
+        const errorBody = (await response.json()) as { error?: { message?: string } };
         if (errorBody?.error?.message) {
           errorMessage = `Claude API error ${response.status}: ${errorBody.error.message}`;
         }
@@ -146,9 +140,13 @@ export class ClaudeService {
             const dataStr = trimmed.slice(6).trim();
             if (dataStr === '[DONE]') continue;
 
-            let event: SSEEvent;
+            let event: {
+              type: string;
+              delta?: { type: string; text: string };
+              error?: { type: string; message: string };
+            };
             try {
-              event = JSON.parse(dataStr);
+              event = JSON.parse(dataStr) as typeof event;
             } catch {
               // skip malformed SSE data
               continue;
@@ -257,15 +255,13 @@ export class ClaudeService {
 
     const parsed = this.parseJSON<{
       variants: Array<{
-        variantNumber: 1 | 2 | 3;
         hook: string;
         body: string;
-        cta: string;
+        callToAction: string;
         hashtags: string[];
-        viralityScore?: number;
-        wordCount: number;
-        charCount: number;
-        differentiator?: string;
+        estimatedEngagementScore?: number;
+        whyItWorks?: string;
+        platformVariants?: Partial<Record<SocialPlatform, { body: string; hashtags: string[] }>>;
       }>;
     }>(fullText);
 
@@ -274,35 +270,27 @@ export class ClaudeService {
     }
 
     return parsed.variants.map((v) => ({
-      id: `variant-${Date.now()}-${v.variantNumber}`,
-      variantNumber: v.variantNumber,
       hook: v.hook,
       body: v.body,
-      cta: v.cta,
+      callToAction: v.callToAction,
       hashtags: v.hashtags.map((h) => h.replace(/^#/, '')),
-      platform: Array.isArray(params.platform) ? params.platform[0] : params.platform,
-      framework: params.framework,
-      hookType: params.hookType,
-      viralityScore: v.viralityScore,
-      wordCount: v.wordCount,
-      charCount: v.charCount,
+      estimatedEngagementScore: v.estimatedEngagementScore ?? 0,
+      whyItWorks: v.whyItWorks ?? '',
+      platformVariants: v.platformVariants,
     }));
   }
 
   // ─── Generate Weekly Strategy ─────────────────────────────────────────────
 
-  async generateWeeklyStrategy(
-    businessProfile: BusinessProfile,
-    analyticsSnapshot?: string
-  ): Promise<WeeklyStrategy> {
+  async generateWeeklyStrategy(businessProfile: BusinessProfile): Promise<WeeklyStrategy> {
     const systemPrompt = buildSystemPrompt(businessProfile);
-    const userPrompt = buildStrategyPrompt(businessProfile, analyticsSnapshot);
+    const userPrompt = buildStrategyPrompt(businessProfile);
 
     const fullText = await this.generateCollect(systemPrompt, userPrompt, undefined, 4096);
     const parsed = this.parseJSON<WeeklyStrategy>(fullText);
 
-    if (!parsed.schedule || !Array.isArray(parsed.schedule)) {
-      throw new Error('Invalid strategy response: missing schedule array');
+    if (!parsed.calendarItems || !Array.isArray(parsed.calendarItems)) {
+      throw new Error('Invalid strategy response: missing calendarItems array');
     }
 
     return parsed;
@@ -320,29 +308,22 @@ export class ClaudeService {
     const fullText = await this.generateCollect(systemPrompt, userPrompt, onChunk, 4096);
 
     const parsed = this.parseJSON<{
-      title: string;
       hook: string;
-      intro: string;
-      body: string[];
+      scenes: Array<{
+        duration: number;
+        visualDescription: string;
+        voiceover: string;
+        onScreenText?: string;
+      }>;
       cta: string;
-      outro: string;
       totalDurationSeconds: number;
-      visualNotes: string[];
-      captions?: string;
     }>(fullText);
 
     return {
-      id: `script-${Date.now()}`,
-      title: parsed.title,
       hook: parsed.hook,
-      intro: parsed.intro,
-      body: parsed.body,
+      scenes: parsed.scenes,
       cta: parsed.cta,
-      outro: parsed.outro,
-      totalDurationSeconds: parsed.totalDurationSeconds || params.durationSeconds,
-      platform: params.platform,
-      visualNotes: parsed.visualNotes,
-      captions: parsed.captions,
+      totalDurationSeconds: parsed.totalDurationSeconds ?? params.durationSeconds,
     };
   }
 
@@ -434,15 +415,14 @@ export class ClaudeService {
   async analyzeCompetitorGap(businessProfile: BusinessProfile): Promise<string> {
     const systemPrompt = buildSystemPrompt(businessProfile);
 
-    const competitorNames = businessProfile.competitors.map((c) => c.name).join(', ');
     const competitorDetails = businessProfile.competitors
       .map(
         (c) =>
-          `- ${c.name}: ${c.differentiationNotes}${
-            c.weaknesses ? `\n  Weaknesses: ${c.weaknesses.join(', ')}` : ''
-          }`
+          `- @${c.handle} on ${c.platform}: ${c.notes}`
       )
       .join('\n');
+
+    const competitorNames = businessProfile.competitors.map((c) => c.handle).join(', ');
 
     const userPrompt = `COMPETITIVE GAP ANALYSIS REQUEST
 
@@ -455,7 +435,7 @@ Provide a strategic analysis covering:
 
 1. CONTENT GAPS: What content topics or formats are the competitors NOT covering well? Where is there white space for ${businessProfile.businessName} to own?
 
-2. POSITIONING OPPORTUNITIES: Based on competitor weaknesses and ${businessProfile.businessName}'s strengths, what unique positioning angles should be emphasized?
+2. POSITIONING OPPORTUNITIES: Based on competitor notes and ${businessProfile.businessName}'s strengths, what unique positioning angles should be emphasized?
 
 3. PLATFORM OPPORTUNITIES: Which platforms are competitors underutilizing? Where can ${businessProfile.businessName} gain first-mover advantage?
 
