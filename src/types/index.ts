@@ -289,3 +289,54 @@ export interface WeeklyStrategy {
   boldMove: string;
   generatedAt: string;
 }
+
+// ─── Automation Types ─────────────────────────────────────────────────────────
+
+export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0=Sunday … 6=Saturday
+
+export interface AutomationRule {
+  id: string;
+  name: string;
+  isEnabled: boolean;
+  platforms: SocialPlatform[];
+  daysOfWeek: DayOfWeek[];
+  postTimes: string[]; // 'HH:MM' 24-hour
+  contentType: ContentType;
+  useOptimalTimes: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QueueItem {
+  id: string;
+  postId: string;
+  scheduledAt: string;
+  platforms: SocialPlatform[];
+  status: 'pending' | 'processing' | 'done' | 'failed';
+  retryCount: number;
+  error?: string;
+  addedAt: string;
+}
+
+export interface BulkScheduleConfig {
+  platforms: SocialPlatform[];
+  startDate: string; // ISO date string
+  daysOfWeek: DayOfWeek[];
+  postTimes: string[]; // 'HH:MM' 24-hour
+  useOptimalTimes: boolean;
+}
+
+export interface OptimalTimeSlot {
+  platform: SocialPlatform;
+  dayOfWeek: DayOfWeek;
+  time: string; // 'HH:MM'
+  label: string;
+  engagementScore: number; // 0–100
+}
+
+export interface AutomationStats {
+  scheduledCount: number;
+  postedThisWeek: number;
+  activeRules: number;
+  queueLength: number;
+}
