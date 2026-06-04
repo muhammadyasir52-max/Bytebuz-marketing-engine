@@ -340,3 +340,116 @@ export interface AutomationStats {
   activeRules: number;
   queueLength: number;
 }
+
+// ─── Meta Ads Types ───────────────────────────────────────────────────────────
+
+export type MetaCampaignObjective =
+  | 'OUTCOME_AWARENESS'
+  | 'OUTCOME_ENGAGEMENT'
+  | 'OUTCOME_LEADS'
+  | 'OUTCOME_SALES'
+  | 'OUTCOME_TRAFFIC'
+  | 'OUTCOME_APP_PROMOTION';
+
+export type MetaAdStatus = 'ACTIVE' | 'PAUSED' | 'ARCHIVED' | 'DELETED';
+
+export type MetaAdCTAType =
+  | 'LEARN_MORE'
+  | 'SHOP_NOW'
+  | 'SIGN_UP'
+  | 'BOOK_NOW'
+  | 'CONTACT_US'
+  | 'DOWNLOAD'
+  | 'GET_OFFER'
+  | 'WATCH_MORE'
+  | 'APPLY_NOW';
+
+export interface MetaAdInsights {
+  impressions: number;
+  reach: number;
+  clicks: number;
+  spend: number;
+  cpc: number;
+  ctr: number;
+  cpm?: number;
+  conversions?: number;
+  roas?: number;
+  dateStart?: string;
+  dateStop?: string;
+}
+
+export interface MetaAdTargeting {
+  ageMin: number;
+  ageMax: number;
+  geoLocations: { countries: string[] };
+  interests?: { id: string; name: string }[];
+  genders?: number[];
+}
+
+export interface MetaCampaign {
+  id: string;
+  name: string;
+  objective: MetaCampaignObjective;
+  status: MetaAdStatus;
+  dailyBudget?: number;
+  lifetimeBudget?: number;
+  startTime?: string;
+  endTime?: string;
+  insights?: MetaAdInsights;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MetaAdSet {
+  id: string;
+  campaignId: string;
+  name: string;
+  status: MetaAdStatus;
+  dailyBudget: number;
+  billingEvent: string;
+  optimizationGoal: string;
+  targeting: MetaAdTargeting;
+  startTime?: string;
+  endTime?: string;
+  insights?: MetaAdInsights;
+}
+
+export interface MetaAdCreative {
+  id: string;
+  name: string;
+  pageId: string;
+  primaryText: string;
+  headline: string;
+  description?: string;
+  callToAction: MetaAdCTAType;
+  linkUrl: string;
+  imageUrl?: string;
+  videoId?: string;
+}
+
+export interface MetaAd {
+  id: string;
+  adSetId: string;
+  name: string;
+  status: MetaAdStatus;
+  creative: MetaAdCreative;
+  insights?: MetaAdInsights;
+  createdAt: string;
+}
+
+export interface MetaAdAccount {
+  id: string;
+  name: string;
+  currency: string;
+  accountStatus: number;
+  businessName?: string;
+}
+
+export interface MetaAdCopyVariant {
+  headline: string;
+  primaryText: string;
+  description: string;
+  callToAction: MetaAdCTAType;
+  whyItWorks: string;
+  estimatedCTR: number;
+}

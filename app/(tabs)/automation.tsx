@@ -540,6 +540,24 @@ export default function AutomationScreen() {
           </TouchableOpacity>
         )}
 
+        {/* Meta Ads Manager entry point */}
+        <TouchableOpacity
+          style={styles.metaAdsCard}
+          onPress={() => router.push('/ads')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.metaAdsLeft}>
+            <View style={styles.metaAdsIcon}>
+              <Ionicons name="logo-facebook" size={22} color="#FFFFFF" />
+            </View>
+            <View>
+              <Text style={styles.metaAdsTitle}>Meta Ads Manager</Text>
+              <Text style={styles.metaAdsSubtitle}>Facebook & Instagram campaigns · AI-powered copy</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
+        </TouchableOpacity>
+
         {/* Stats row */}
         <View style={styles.statsRow}>
           <StatCard icon="time-outline" value={stats.scheduledCount} label="Scheduled" color={COLORS.warning} />
@@ -582,6 +600,31 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: 100 },
+
+  // Meta Ads card
+  metaAdsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1C1C35',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#1877F230',
+    padding: 14,
+    marginHorizontal: 20,
+    marginBottom: 14,
+  },
+  metaAdsLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
+  metaAdsIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: '#1877F2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  metaAdsTitle: { fontSize: 14, fontWeight: '700', color: '#FFFFFF' },
+  metaAdsSubtitle: { fontSize: 11, color: '#606080', marginTop: 2 },
 
   // Header
   pageHeader: {
