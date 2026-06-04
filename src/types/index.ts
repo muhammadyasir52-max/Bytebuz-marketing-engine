@@ -289,3 +289,66 @@ export interface WeeklyStrategy {
   boldMove: string;
   generatedAt: string;
 }
+
+// ─── Automation Types ──────────────────────────────────────────────────────────
+
+export type AutomationStatus = 'active' | 'paused';
+export type AutomationScheduleType = 'immediate' | 'once' | 'recurring';
+export type AutomationFrequency = 'daily' | 'weekdays' | '3x_week' | 'weekly';
+
+export interface AutomationScheduleConfig {
+  type: AutomationScheduleType;
+  scheduledAt?: string;
+  frequency?: AutomationFrequency;
+  timeOfDay?: string;
+  timezone?: string;
+}
+
+export interface AutomationRule {
+  id: string;
+  name: string;
+  platforms: SocialPlatform[];
+  contentType: ContentType;
+  hookType: HookType;
+  framework: ContentFramework;
+  topic?: string;
+  autoPublish: boolean;
+  schedule: AutomationScheduleConfig;
+  status: AutomationStatus;
+  lastRunAt?: string;
+  nextRunAt?: string;
+  totalRuns: number;
+  successfulRuns: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type AutomationRunStatus = 'generating' | 'publishing' | 'completed' | 'failed';
+
+export interface AutomationRunResult {
+  platform: SocialPlatform;
+  postId?: string;
+  ayrsharePostId?: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface AutomationRun {
+  id: string;
+  ruleId: string;
+  ruleName: string;
+  status: AutomationRunStatus;
+  platforms: SocialPlatform[];
+  generatedContent?: {
+    hook: string;
+    body: string;
+    callToAction: string;
+    hashtags: string[];
+    engagementScore: number;
+  };
+  results: AutomationRunResult[];
+  postId?: string;
+  error?: string;
+  startedAt: string;
+  completedAt?: string;
+}
