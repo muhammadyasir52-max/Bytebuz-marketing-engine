@@ -25,6 +25,12 @@ import {
   MetaAdCTAType,
 } from '@/types';
 import { CreateCampaignParams } from '@/services/metaAds/metaAdsService';
+import {
+  isValidAccessToken,
+  isValidAdAccountId,
+  sanitiseNumericId,
+  validateDailyBudget,
+} from '@/utils/security';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -85,9 +91,19 @@ function ConnectSheet({ visible, onClose, onConnect }: {
       Alert.alert('Required Fields', 'Access token and Ad Account ID are required.');
       return;
     }
+    if (!isValidAccessToken(token.trim())) {
+      Alert.alert('Invalid Token', 'Access token appears invalid. It should be at least 20 characters with no spaces.');
+      return;
+    }
+    const cleanAccountId = sanitiseNumericId(accountId.trim());
+    if (!isValidAdAccountId(cleanAccountId)) {
+      Alert.alert('Invalid Account ID', 'Ad Account ID must be 8-20 digits.');
+      return;
+    }
+    const cleanPageId = pageId.trim() ? sanitiseNumericId(pageId.trim()) : '';
     setSubmitting(true);
     try {
-      await onConnect(token.trim(), accountId.trim(), pageId.trim());
+      await onConnect(token.trim(), cleanAccountId, cleanPageId);
       onClose();
     } finally {
       setSubmitting(false);
@@ -149,26 +165,29 @@ function ConnectSheet({ visible, onClose, onConnect }: {
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry
+            maxLength={600}
           />
 
           <Text style={styles.fieldLabel}>Ad Account ID *</Text>
           <TextInput
             style={styles.textInput}
             value={accountId}
-            onChangeText={setAccountId}
+            onChangeText={(v) => setAccountId(v.replace(/\D/g, '').slice(0, 20))}
             placeholder="1234567890"
             placeholderTextColor={COLORS.textMuted}
             keyboardType="numeric"
+            maxLength={20}
           />
 
           <Text style={styles.fieldLabel}>Facebook Page ID (optional)</Text>
           <TextInput
             style={styles.textInput}
             value={pageId}
-            onChangeText={setPageId}
+            onChangeText={(v) => setPageId(v.replace(/\D/g, '').slice(0, 20))}
             placeholder="Required to create ad creatives"
             placeholderTextColor={COLORS.textMuted}
             keyboardType="numeric"
+            maxLength={20}
           />
 
           <View style={styles.securityNote}>
@@ -253,11 +272,15 @@ export default function AdsManagerScreen() {
       Alert.alert('Name Required', 'Enter a campaign name.');
       return;
     }
-    const budgetCents = Math.round(parseFloat(dailyBudgetStr || '0') * 100);
+    const budgetValidation = validateDailyBudget(dailyBudgetStr || '0');
+    if (!budgetValidation.valid) {
+      Alert.alert('Invalid Budget', budgetValidation.error ?? 'Enter a valid daily budget.');
+      return;
+    }
     const params: CreateCampaignParams = {
-      name: campaignName.trim(),
+      name: campaignName.trim().slice(0, 200),
       objective: campaignObjective,
-      dailyBudget: budgetCents > 0 ? budgetCents : undefined,
+      dailyBudget: budgetValidation.cents,
       status: 'PAUSED',
     };
     const campaign = await createCampaign(params);

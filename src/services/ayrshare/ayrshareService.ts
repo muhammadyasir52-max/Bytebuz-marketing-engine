@@ -7,6 +7,7 @@ import {
   AnalyticsPeriod,
 } from '@/types';
 import { formatPostForPlatform, formatHashtags, splitIntoThread } from './platformFormatters';
+import { checkRateLimit, logAuditEvent, validateScheduleTime, userFacingApiError } from '@/utils/security';
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -272,9 +273,9 @@ export class AyrshareService {
       throw new Error('Cannot schedule post: no schedule provided');
     }
 
-    const scheduledDate = new Date(post.schedule.scheduledAt);
-    if (scheduledDate <= new Date()) {
-      throw new Error('Cannot schedule post: scheduled time must be in the future');
+    const timeValidation = validateScheduleTime(post.schedule.scheduledAt);
+    if (!timeValidation.valid) {
+      throw new Error(`Cannot schedule post: ${timeValidation.error}`);
     }
 
     const payload = this.buildPostPayload(post, true);
@@ -437,14 +438,20 @@ export class AyrshareService {
   // ─── Validate API Key ───────────────────────────────────────────────────
 
   async validateApiKey(): Promise<boolean> {
+    if (!checkRateLimit('ayrshare_key_validate', 3, 60_000)) {
+      logAuditEvent('rate_limit', 'ayrshare', 'API key validation rate limit hit', 'warning');
+      throw new Error('Too many validation attempts. Please wait 60 seconds and try again.');
+    }
     try {
       const response = await fetch(`${this.baseUrl}/user`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
-
-      return response.ok;
+      const ok = response.ok;
+      logAuditEvent('token_validation', 'ayrshare', ok ? 'API key valid' : `Invalid (${response.status})`, ok ? 'info' : 'warning');
+      return ok;
     } catch {
+      logAuditEvent('error', 'ayrshare', 'API key validation network error', 'error');
       return false;
     }
   }

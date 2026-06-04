@@ -4,6 +4,7 @@ import {
   MetaAdCTAType,
   MetaAdCopyVariant,
 } from '@/types';
+import { safeParseJSON, checkRateLimit, userFacingApiError } from '@/utils/security';
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -52,20 +53,30 @@ export class AdCopyService {
   }
 
   private async generate(systemPrompt: string, userPrompt: string, maxTokens = 3000): Promise<string> {
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({
-        model: this.model,
-        max_tokens: maxTokens,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      }),
-    });
+    if (!checkRateLimit('ad_copy_generate', 20, 60_000)) {
+      throw new Error(userFacingApiError('Claude ad copy', 429));
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          model: this.model,
+          max_tokens: maxTokens,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }],
+        }),
+      });
+    } catch (networkError) {
+      throw new Error(
+        `Network error: ${networkError instanceof Error ? networkError.message : 'Failed to connect to Claude API'}`
+      );
+    }
 
     if (!response.ok) {
-      const err = await response.json().catch(() => ({})) as { error?: { message?: string } };
-      throw new Error(`Claude API error ${response.status}: ${err?.error?.message ?? response.statusText}`);
+      throw new Error(userFacingApiError('Claude', response.status));
     }
 
     const data = await response.json() as {
@@ -77,17 +88,7 @@ export class AdCopyService {
   }
 
   private parseJSON<T>(text: string): T {
-    const cleaned = text
-      .replace(/^```(?:json)?\s*/m, '')
-      .replace(/\s*```\s*$/m, '')
-      .trim();
-    try {
-      return JSON.parse(cleaned) as T;
-    } catch {
-      const match = cleaned.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-      if (match) return JSON.parse(match[0]) as T;
-      throw new Error(`Failed to parse Claude response as JSON: ${cleaned.slice(0, 200)}`);
-    }
+    return safeParseJSON<T>(text);
   }
 
   // ─── Generate Ad Copy Variants ──────────────────────────────────────────

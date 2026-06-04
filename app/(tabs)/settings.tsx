@@ -328,6 +328,14 @@ export default function SettingsScreen() {
           />
         </Section>
 
+        <Section title="Security">
+          <SettingRow
+            label="Security Center"
+            value="Audit · Rate Limits · Key Health"
+            onPress={() => router.push('/security' as any)}
+          />
+        </Section>
+
         <Section title="App">
           <SettingRow label="Version" value={`v${appVersion}`} />
           <View style={styles.separator} />

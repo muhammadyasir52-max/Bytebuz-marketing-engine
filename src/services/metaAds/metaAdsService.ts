@@ -10,6 +10,13 @@ import {
   MetaAdInsights,
   MetaAdAccount,
 } from '@/types';
+import {
+  checkRateLimit,
+  sanitiseErrorMessage,
+  userFacingApiError,
+  isValidAdAccountId,
+  logAuditEvent,
+} from '@/utils/security';
 
 // ─── Meta Marketing API v18 ───────────────────────────────────────────────────
 
@@ -169,15 +176,31 @@ export class MetaAdsService {
 
   // ─── Core request helper ─────────────────────────────────────────────────
 
+  private getAuthHeaders(): Record<string, string> {
+    return {
+      // FIX (Critical): token in Authorization header, not URL query param
+      'Authorization': `Bearer ${this.accessToken}`,
+      'Content-Type': 'application/json',
+    };
+  }
+
   private async request<T>(
     path: string,
     method: 'GET' | 'POST' | 'DELETE',
     params?: Record<string, unknown>
   ): Promise<T> {
-    const url = new URL(`${BASE_URL}${path}`);
-    url.searchParams.set('access_token', this.accessToken);
+    // Rate limit: max 30 Meta API calls per 10 seconds
+    if (!checkRateLimit('meta_api', 30, 10_000)) {
+      logAuditEvent('rate_limit', 'meta', 'Meta API rate limit reached', 'warning');
+      throw new Error(userFacingApiError('Meta Ads', 429));
+    }
 
-    const options: RequestInit = { method };
+    const url = new URL(`${BASE_URL}${path}`);
+
+    const options: RequestInit = {
+      method,
+      headers: this.getAuthHeaders(),
+    };
 
     if (method === 'GET' && params) {
       for (const [k, v] of Object.entries(params)) {
@@ -186,35 +209,35 @@ export class MetaAdsService {
     }
 
     if (method === 'POST') {
-      options.headers = { 'Content-Type': 'application/json' };
       if (params) options.body = JSON.stringify(params);
     }
 
     let response: Response;
     try {
       response = await fetch(url.toString(), options);
-    } catch (err) {
-      throw new Error(
-        `Meta API network error: ${err instanceof Error ? err.message : 'Connection failed'}`
-      );
+    } catch {
+      logAuditEvent('error', 'meta', 'Meta API network error', 'error');
+      throw new Error(userFacingApiError('Meta Ads'));
     }
 
     let data: T & { error?: MetaAPIError };
     try {
       data = await response.json();
     } catch {
-      throw new Error(`Meta API returned non-JSON response (status: ${response.status})`);
+      throw new Error(userFacingApiError('Meta Ads', response.status));
     }
 
     if (!response.ok || (data as { error?: MetaAPIError }).error) {
       const err = (data as { error?: MetaAPIError }).error;
-      throw new Error(
-        err
-          ? `Meta API error ${err.code}: ${err.message}`
-          : `Meta API request failed with status ${response.status}`
+      // Log full error internally but expose only safe message to caller
+      logAuditEvent('error', 'meta',
+        err ? `code=${err.code} subcode=${err.error_subcode}` : `status=${response.status}`,
+        'error'
       );
+      throw new Error(userFacingApiError('Meta Ads', err?.code ?? response.status));
     }
 
+    logAuditEvent('api_call', 'meta', `${method} ${path}`, 'info');
     return data;
   }
 
@@ -279,6 +302,10 @@ export class MetaAdsService {
   // ─── Ad Account ───────────────────────────────────────────────────────────
 
   async getAdAccount(adAccountId: string): Promise<MetaAdAccount> {
+    // FIX (High): validate ad account ID is purely numeric before using in URL
+    if (!isValidAdAccountId(adAccountId)) {
+      throw new Error('Invalid Ad Account ID. Must be 8–20 digits with no other characters.');
+    }
     const raw = await this.request<{
       id: string; name: string; currency: string;
       account_status: number; business?: { name: string };
@@ -565,12 +592,20 @@ export class MetaAdsService {
   // ─── Validate token ───────────────────────────────────────────────────────
 
   async validateToken(): Promise<boolean> {
+    // FIX (Critical): token in Authorization header, not URL; rate-limited
+    if (!checkRateLimit('meta_token_validate', 3, 60_000)) {
+      logAuditEvent('rate_limit', 'meta', 'Token validation rate limit hit', 'warning');
+      throw new Error('Too many validation attempts. Please wait 60 seconds and try again.');
+    }
     try {
-      const res = await fetch(
-        `${BASE_URL}/me?access_token=${this.accessToken}&fields=id,name`
-      );
-      return res.ok;
+      const res = await fetch(`${BASE_URL}/me?fields=id,name`, {
+        headers: this.getAuthHeaders(),
+      });
+      const ok = res.ok;
+      logAuditEvent('token_validation', 'meta', ok ? 'Token valid' : 'Token invalid', ok ? 'info' : 'warning');
+      return ok;
     } catch {
+      logAuditEvent('error', 'meta', 'Token validation network error', 'error');
       return false;
     }
   }

@@ -9,6 +9,13 @@ import {
   VideoScript,
 } from '@/types';
 import {
+  MAX_STREAM_CHARS,
+  checkRateLimit,
+  safeParseJSON,
+  logAuditEvent,
+  userFacingApiError,
+} from '@/utils/security';
+import {
   buildSystemPrompt,
   buildPostPrompt,
   buildVideoScriptPrompt,
@@ -156,6 +163,11 @@ export class ClaudeService {
               case 'content_block_delta':
                 if (event.delta?.type === 'text_delta' && event.delta.text) {
                   accumulated += event.delta.text;
+                  // FIX (Medium): guard against unbounded stream memory growth
+                  if (accumulated.length > MAX_STREAM_CHARS) {
+                    onError(new Error('Response was too large. Please try again with a shorter prompt.'));
+                    return;
+                  }
                   onChunk(event.delta.text);
                 }
                 break;
@@ -224,22 +236,8 @@ export class ClaudeService {
   // ─── Parse JSON safely from LLM output ───────────────────────────────────
 
   private parseJSON<T>(text: string): T {
-    // Strip markdown code blocks if present
-    const cleaned = text
-      .replace(/^```(?:json)?\s*/m, '')
-      .replace(/\s*```\s*$/m, '')
-      .trim();
-
-    try {
-      return JSON.parse(cleaned) as T;
-    } catch {
-      // Try to extract JSON object from surrounding text
-      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]) as T;
-      }
-      throw new Error(`Failed to parse Claude response as JSON: ${cleaned.slice(0, 200)}`);
-    }
+    // FIX (High): use size-guarded parser to prevent memory exhaustion
+    return safeParseJSON<T>(text);
   }
 
   // ─── Generate Post ────────────────────────────────────────────────────────
@@ -387,6 +385,11 @@ export class ClaudeService {
   // ─── Validate API Key ─────────────────────────────────────────────────────
 
   async validateApiKey(): Promise<boolean> {
+    // FIX (Critical): rate-limit validation attempts; only 200 is truly valid
+    if (!checkRateLimit('claude_key_validate', 3, 60_000)) {
+      logAuditEvent('rate_limit', 'claude', 'API key validation rate limit hit', 'warning');
+      throw new Error('Too many validation attempts. Please wait 60 seconds and try again.');
+    }
     try {
       const response = await fetch(this.baseUrl, {
         method: 'POST',
@@ -397,15 +400,12 @@ export class ClaudeService {
           messages: [{ role: 'user', content: 'Hi' }],
         }),
       });
-
-      // 200 = valid, 401 = invalid key, other errors = network/server issue
-      if (response.ok) return true;
-      if (response.status === 401 || response.status === 403) return false;
-
-      // For other errors (500, 529 etc.), the key may be valid — assume true
-      return response.status !== 401 && response.status !== 403;
+      const ok = response.ok;
+      logAuditEvent('token_validation', 'claude', ok ? 'API key valid' : `Invalid (${response.status})`, ok ? 'info' : 'warning');
+      // FIX (Critical): only 200 OK means the key is valid; fail closed on all other codes
+      return ok;
     } catch {
-      // Network error — cannot determine validity
+      logAuditEvent('error', 'claude', 'API key validation network error', 'error');
       return false;
     }
   }
