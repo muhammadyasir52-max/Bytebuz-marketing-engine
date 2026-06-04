@@ -161,7 +161,7 @@ export default function DashboardScreen() {
         <View style={styles.section}>
           <SectionHeader
             title="Today's Schedule"
-            action={{ label: 'View All', onPress: () => router.push('/(tabs)/calendar') }}
+            action={{ label: 'View All', onPress: () => router.push('/(tabs)/automation') }}
           />
           {todaysPosts.length === 0 ? (
             <EmptyState

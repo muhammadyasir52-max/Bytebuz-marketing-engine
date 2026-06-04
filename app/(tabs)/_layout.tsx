@@ -60,11 +60,15 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="calendar"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="automation"
         options={{
-          title: 'Calendar',
+          title: 'Automate',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={(focused ? 'calendar' : 'calendar-outline') as IoniconsName}
+              name={(focused ? 'git-branch' : 'git-branch-outline') as IoniconsName}
               size={24}
               color={color}
             />

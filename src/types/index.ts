@@ -289,3 +289,41 @@ export interface WeeklyStrategy {
   boldMove: string;
   generatedAt: string;
 }
+
+// ─── Automation Types ─────────────────────────────────────────────────────────
+
+export type AutomationRuleType =
+  | 'optimal_timing'
+  | 'recurring'
+  | 'content_recycling';
+
+export interface AutomationRule {
+  id: string;
+  name: string;
+  type: AutomationRuleType;
+  description: string;
+  platforms: SocialPlatform[];
+  frequency: PostFrequency;
+  postTimes: string[];
+  isActive: boolean;
+  lastTriggeredAt?: string;
+  nextTriggerAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BulkScheduleOptions {
+  platforms: SocialPlatform[];
+  startDate: string;
+  endDate: string;
+  frequency: PostFrequency;
+  useOptimalTimes: boolean;
+  customTimes?: Partial<Record<SocialPlatform, string[]>>;
+}
+
+export interface ScheduledSlot {
+  date: string;
+  time: string;
+  platform: SocialPlatform;
+  scheduledAt: string;
+}
