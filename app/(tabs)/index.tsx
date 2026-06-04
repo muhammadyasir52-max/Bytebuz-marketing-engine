@@ -254,6 +254,79 @@ export default function DashboardScreen() {
           </View>
         </TouchableOpacity>
 
+        {/* Power Tools */}
+        <View style={styles.section}>
+          <SectionHeader title="Power Tools" />
+          <View style={styles.toolsGrid}>
+            <TouchableOpacity
+              style={[styles.toolCard, { borderColor: '#7C3AED44' }]}
+              onPress={() => router.push('/ads' as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.toolIcon, { backgroundColor: '#1877F222' }]}>
+                <Ionicons name="logo-facebook" size={24} color="#1877F2" />
+              </View>
+              <Text style={styles.toolLabel}>Meta Ads</Text>
+              <Text style={styles.toolSub}>Campaigns & AI Copy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toolCard, { borderColor: '#10B98144' }]}
+              onPress={() => router.push('/(tabs)/automation' as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.toolIcon, { backgroundColor: '#10B98122' }]}>
+                <Ionicons name="repeat" size={24} color="#10B981" />
+              </View>
+              <Text style={styles.toolLabel}>Automation</Text>
+              <Text style={styles.toolSub}>Rules & Queue</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toolCard, { borderColor: '#3B82F644' }]}
+              onPress={() => router.push('/strategy' as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.toolIcon, { backgroundColor: '#3B82F622' }]}>
+                <Ionicons name="sparkles" size={24} color="#3B82F6" />
+              </View>
+              <Text style={styles.toolLabel}>Strategy</Text>
+              <Text style={styles.toolSub}>AI Weekly Plan</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toolCard, { borderColor: '#F59E0B44' }]}
+              onPress={() => router.push('/connectors' as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.toolIcon, { backgroundColor: '#F59E0B22' }]}>
+                <Ionicons name="link" size={24} color="#F59E0B" />
+              </View>
+              <Text style={styles.toolLabel}>Connectors</Text>
+              <Text style={styles.toolSub}>Social Accounts</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toolCard, { borderColor: '#EF444444' }]}
+              onPress={() => router.push('/security' as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.toolIcon, { backgroundColor: '#EF444422' }]}>
+                <Ionicons name="shield-checkmark-outline" size={24} color="#EF4444" />
+              </View>
+              <Text style={styles.toolLabel}>Security</Text>
+              <Text style={styles.toolSub}>Audit & Status</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.toolCard, { borderColor: '#A78BFA44' }]}
+              onPress={() => router.push('/post/new' as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.toolIcon, { backgroundColor: '#A78BFA22' }]}>
+                <Ionicons name="add-circle-outline" size={24} color="#A78BFA" />
+              </View>
+              <Text style={styles.toolLabel}>New Post</Text>
+              <Text style={styles.toolSub}>Create & Schedule</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Quick Generate Grid */}
         <View style={styles.section}>
           <SectionHeader title="Quick Generate" />
@@ -370,6 +443,39 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   strategySubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.7)' },
+  toolsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 12,
+  },
+  toolCard: {
+    width: '30%',
+    alignItems: 'center',
+    backgroundColor: COLORS.card,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    paddingVertical: 16,
+    gap: 8,
+  },
+  toolIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toolLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+  },
+  toolSub: {
+    fontSize: 10,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+  },
   quickGenerateGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
