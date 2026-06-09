@@ -18,7 +18,7 @@ import { usePostStore } from '@/store/usePostStore';
 import { Post, SocialPlatform } from '@/types';
 import { PLATFORM_LIMITS } from '@/constants/platforms';
 import PlatformIcon from '@/components/common/PlatformIcon';
-import TagInput from '@/components/common/TagInput';
+import TagInput from '@/components/onboarding/TagInput';
 import Button from '@/components/common/Button';
 
 const COLORS = {
@@ -282,7 +282,7 @@ export default function PostEditorScreen({ postId, existingPost }: PostEditorScr
           <TagInput
             label="Hashtags"
             tags={hashtags}
-            onChangeTags={setHashtags}
+            onTagsChange={setHashtags}
             maxTags={PLATFORM_LIMITS[selectedPlatformTab]?.maxHashtags ?? 30}
             placeholder="Add hashtag (without #)"
             hint={`Max ${PLATFORM_LIMITS[selectedPlatformTab]?.maxHashtags ?? 30} for ${selectedPlatformTab}`}
@@ -347,7 +347,7 @@ export default function PostEditorScreen({ postId, existingPost }: PostEditorScr
               mode="datetime"
               minimumDate={new Date()}
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(_, selected) => {
+              onChange={(_: unknown, selected: Date | undefined) => {
                 setShowDatePicker(false);
                 if (selected) setScheduleDate(selected);
               }}

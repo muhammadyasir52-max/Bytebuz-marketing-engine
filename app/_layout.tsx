@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
-import { setupNotifications } from '@/services/notifications';
+import { setupNotifications } from '@/services/notifications/schedulingService';
 
 SplashScreen.preventAutoHideAsync();
 

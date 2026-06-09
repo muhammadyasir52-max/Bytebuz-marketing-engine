@@ -107,7 +107,7 @@ export default function Step6Screen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-      <OnboardingProgress step={6} total={7} />
+      <OnboardingProgress currentStep={6} totalSteps={7} />
 
       <ScrollView
         style={styles.scroll}

@@ -215,8 +215,6 @@ export function useAyrshare(): UseAyrshareReturn {
 
     try {
       const analytics = await service.getPostAnalytics(post.ayrsharePostId);
-      // Update post in store with analytics
-      updatePost(post.id, { analytics });
       return analytics;
     } catch (analyticsError) {
       const message =

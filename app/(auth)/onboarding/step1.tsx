@@ -76,7 +76,7 @@ export default function Step1Screen() {
       businessName: businessName.trim(),
       niche: finalNiche,
       description: description.trim(),
-      website: website.trim() || undefined,
+      websiteUrl: website.trim() || undefined,
     });
     router.push('/(auth)/onboarding/step2');
   };
@@ -101,7 +101,7 @@ export default function Step1Screen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-      <OnboardingProgress step={1} total={7} />
+      <OnboardingProgress currentStep={1} totalSteps={7} />
 
       <ScrollView
         style={styles.scroll}

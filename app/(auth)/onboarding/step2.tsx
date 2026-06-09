@@ -50,7 +50,7 @@ export default function Step2Screen() {
     if (!validate()) return;
     updateProfile({
       targetAudience: {
-        demographic: demographic.trim(),
+        primaryDemographic: demographic.trim(),
         painPoints,
         desires,
         jobToBeDone: jobToBeDone.trim(),
@@ -103,7 +103,6 @@ export default function Step2Screen() {
               maxTags={5}
               placeholder="Type a pain point and press enter"
               hint="Add up to 5 pain points your customers experience"
-              error={errors.painPoints}
             />
           </View>
 
@@ -111,14 +110,13 @@ export default function Step2Screen() {
             <TagInput
               label="Their deepest desires *"
               tags={desires}
-              onChangeTags={(tags) => {
+              onTagsChange={(tags) => {
                 setDesires(tags);
                 if (errors.desires) setErrors((p) => ({ ...p, desires: '' }));
               }}
               maxTags={5}
               placeholder="Type a desire and press enter"
               hint="What do they truly want to achieve?"
-              error={errors.desires}
             />
           </View>
 

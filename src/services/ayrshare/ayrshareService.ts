@@ -176,14 +176,15 @@ export class AyrshareService {
     }
 
     // Add media URLs if present
-    if (post.content.mediaUrls && post.content.mediaUrls.length > 0) {
-      payload.mediaUrls = post.content.mediaUrls;
+    const mediaUrls = post.media?.map((m) => m.uri) ?? [];
+    if (mediaUrls.length > 0) {
+      payload.mediaUrls = mediaUrls;
     }
 
     // Twitter thread support
     if (post.platforms.includes('twitter')) {
       const twitterContent = formatPostForPlatform(post, 'twitter');
-      const fullContent = `${post.content.hook}\n\n${post.content.body}\n\n${post.content.cta}`;
+      const fullContent = `${post.content.hook}\n\n${post.content.body}\n\n${post.content.callToAction}`;
       if (fullContent.length > 280) {
         // Full content needs threading — split it
         const threadTweets = splitIntoThread(fullContent, 280);
@@ -204,13 +205,13 @@ export class AyrshareService {
     // Instagram options
     if (post.platforms.includes('instagram')) {
       const hasVideo =
-        post.content.mediaUrls?.some((url) =>
+        mediaUrls.some((url) =>
           /\.(mp4|mov|avi|webm)(\?|$)/i.test(url)
-        ) ?? false;
+        );
 
       payload.instagramOptions = {
         type: hasVideo ? 'reel' : 'feed',
-        mediaUrls: post.content.mediaUrls,
+        mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
       };
     }
 
@@ -305,10 +306,10 @@ export class AyrshareService {
       .map((profile) => ({
         platform: profile.platform.toLowerCase() as SocialPlatform,
         handle: profile.handle ?? profile.userName ?? '',
-        profileUrl: profile.profileURL,
+        profileUrl: profile.profileURL ?? '',
         profileImageUrl: profile.profilePictureURL,
         connectedAt: profile.connectedAt ?? new Date().toISOString(),
-        isActive: profile.active !== false,
+        status: 'active' as const,
         followerCount: profile.followerCount ?? profile.followers,
       }));
   }
@@ -348,7 +349,7 @@ export class AyrshareService {
 
     return {
       postId: ayrsharePostId,
-      platform: 'instagram', // Will be determined from post data in real integration
+      platform: 'instagram' as SocialPlatform, // Will be determined from post data in real integration
       impressions: data.impressions ?? 0,
       reach: data.reach ?? 0,
       likes: data.likes ?? 0,
@@ -357,7 +358,7 @@ export class AyrshareService {
       saves: data.saves ?? 0,
       clicks: data.clicks ?? 0,
       engagementRate: data.engagementRate ?? 0,
-      fetchedAt: new Date().toISOString(),
+      postedAt: new Date().toISOString(),
     };
   }
 
@@ -396,10 +397,14 @@ export class AyrshareService {
 
     const topPosts = (platformData.topPosts ?? []).map((p) => ({
       postId: p.id ?? p.postId ?? '',
-      content: p.content ?? p.text ?? '',
-      engagementRate: p.engagementRate ?? 0,
+      platform: platform as SocialPlatform,
       impressions: p.impressions ?? 0,
+      reach: 0,
       likes: p.likes ?? 0,
+      comments: 0,
+      shares: 0,
+      engagementRate: p.engagementRate ?? 0,
+      postedAt: new Date().toISOString(),
     }));
 
     return {
