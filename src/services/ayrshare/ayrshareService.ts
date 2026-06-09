@@ -410,15 +410,19 @@ export class AyrshareService {
     return {
       platform,
       period,
-      followers: platformData.followers ?? 0,
-      followersGrowth: platformData.followersGrowth ?? 0,
-      totalImpressions: platformData.impressions ?? 0,
-      totalReach: platformData.reach ?? 0,
-      totalEngagements: platformData.engagements ?? 0,
-      avgEngagementRate: platformData.engagementRate ?? 0,
+      metrics: {
+        followers: platformData.followers ?? 0,
+        followerGrowth: platformData.followersGrowth ?? 0,
+        reach: platformData.reach ?? 0,
+        impressions: platformData.impressions ?? 0,
+        engagementRate: platformData.engagementRate ?? 0,
+        totalEngagements: platformData.engagements ?? 0,
+        profileVisits: 0,
+        linkClicks: undefined,
+      },
       topPosts,
-      bestPostingTimes: platformData.bestTimes ?? [],
-      fetchedAt: new Date().toISOString(),
+      trends: [],
+      lastSyncedAt: new Date().toISOString(),
     };
   }
 

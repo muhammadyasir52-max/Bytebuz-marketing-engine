@@ -23,7 +23,7 @@ const HASHTAGS_INLINE_OR_NONE: SocialPlatform[] = ['twitter', 'facebook'];
  * with proper platform-specific formatting.
  */
 export function formatPostForPlatform(post: Post, platform: SocialPlatform): string {
-  const { hook, body, cta, hashtags } = post.content;
+  const { hook, body, callToAction: cta, hashtags } = post.content;
 
   let content: string;
 
@@ -232,7 +232,8 @@ export function formatHashtags(hashtags: string[], platform: SocialPlatform): st
  */
 export function validateForPlatform(post: Post, platform: SocialPlatform): string[] {
   const errors: string[] = [];
-  const { hook, body, cta, hashtags, mediaUrls } = post.content;
+  const { hook, body, callToAction: cta, hashtags } = post.content;
+  const mediaUrls = post.media?.map((m) => m.uri) ?? [];
   const fullContent = formatPostForPlatform(post, platform);
   const limit = PLATFORM_LIMITS[platform];
 

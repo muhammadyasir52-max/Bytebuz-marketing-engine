@@ -150,7 +150,7 @@ export async function cancelAllNotifications(): Promise<void> {
  * Returns all currently scheduled notification identifiers.
  */
 export async function getAllScheduledNotifications(): Promise<
-  Notifications.ScheduledNotificationObject[]
+  Awaited<ReturnType<typeof Notifications.getAllScheduledNotificationsAsync>>
 > {
   return Notifications.getAllScheduledNotificationsAsync();
 }
