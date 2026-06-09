@@ -1,0 +1,52 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:          # Manual trigger button in GitHub UI
+  push:
+    branches:
+      - claude/marketing-engine-mobile-app-fJ0Yh
+
+jobs:
+  build:
+    name: Build Android APK (EAS)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Configure EAS project (first time only)
+        run: |
+          # Link or create the Expo project non-interactively
+          npx eas-cli build:configure --platform android --non-interactive || true
+
+      - name: Build Android APK
+        run: |
+          npx eas-cli build \
+            --platform android \
+            --profile preview \
+            --non-interactive \
+            --no-wait
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Get build URL
+        run: |
+          echo "Build submitted to EAS! Check your build status at:"
+          echo "https://expo.dev/accounts/careliner/builds"
+          echo ""
+          echo "The APK download link will appear there once the build finishes (~10 min)"
