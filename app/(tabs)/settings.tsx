@@ -196,6 +196,13 @@ export default function SettingsScreen() {
           />
         </Section>
 
+        <Section title="Care Stations">
+          <SettingRow
+            label="Manage Care Stations"
+            onPress={() => router.push('/care-stations')}
+          />
+        </Section>
+
         <Section title="Content Defaults">
           <SettingRow
             label="Default Framework"

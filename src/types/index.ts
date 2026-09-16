@@ -257,6 +257,52 @@ export interface AppSettings {
   language: string;
 }
 
+// ─── Care Station / Device Tagging Types ──────────────────────────────────────
+
+export type DeviceType =
+  | 'blood_pressure_monitor'
+  | 'pulse_oximeter'
+  | 'digital_stethoscope'
+  | 'thermometer'
+  | 'ecg'
+  | 'glucometer'
+  | 'otoscope'
+  | 'weighing_scale'
+  | 'dermatoscope'
+  | 'spirometer'
+  | 'other';
+
+export type DeviceStatus = 'active' | 'inactive' | 'maintenance' | 'missing';
+
+export type CareStationStatus = 'active' | 'inactive' | 'in_storage';
+
+export interface Device {
+  id: string;
+  /** Barcode value printed on the device's tag, e.g. "DV-7F3K9Q" */
+  code: string;
+  name: string;
+  type: DeviceType;
+  serialNumber?: string;
+  status: DeviceStatus;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CareStation {
+  id: string;
+  /** Barcode value printed on the briefcase's own label, e.g. "CS-2A8P1X" */
+  code: string;
+  name: string;
+  location?: string;
+  assignedTo?: string;
+  status: CareStationStatus;
+  devices: Device[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ─── Weekly Strategy Types ────────────────────────────────────────────────────
 
 export interface StrategyAction {
