@@ -270,6 +270,8 @@ export type DeviceType =
   | 'weighing_scale'
   | 'dermatoscope'
   | 'spirometer'
+  | 'ultrasound_probe'
+  | 'camera'
   | 'other';
 
 export type DeviceStatus = 'active' | 'inactive' | 'maintenance' | 'missing';
@@ -285,6 +287,8 @@ export interface Device {
   serialNumber?: string;
   status: DeviceStatus;
   notes?: string;
+  /** Id of the DeviceCatalogItem this device was added from, if any */
+  catalogId?: string;
   createdAt: string;
   updatedAt: string;
 }

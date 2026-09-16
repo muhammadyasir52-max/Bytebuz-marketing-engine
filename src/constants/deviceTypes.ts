@@ -69,6 +69,18 @@ export const DEVICE_TYPES: DeviceTypeConfig[] = [
     color: '#F97316',
   },
   {
+    id: 'ultrasound_probe',
+    label: 'Ultrasound Probe',
+    icon: 'scan-outline',
+    color: '#0EA5E9',
+  },
+  {
+    id: 'camera',
+    label: 'Camera',
+    icon: 'videocam-outline',
+    color: '#94A3B8',
+  },
+  {
     id: 'other',
     label: 'Other Device',
     icon: 'hardware-chip-outline',

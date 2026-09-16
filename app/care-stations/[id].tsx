@@ -213,21 +213,30 @@ export default function CareStationDetailScreen() {
 
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>Devices ({careStation.devices.length})</Text>
-          <TouchableOpacity
-            onPress={() => router.push(`/care-stations/${careStation.id}/device/new` as any)}
-            style={styles.addDeviceLink}
-          >
-            <Ionicons name="add-circle-outline" size={18} color={COLORS.primary} />
-            <Text style={styles.addDeviceLinkText}>Add Device</Text>
-          </TouchableOpacity>
+          <View style={styles.addDeviceLinks}>
+            <TouchableOpacity
+              onPress={() => router.push(`/care-stations/${careStation.id}/device/catalog` as any)}
+              style={styles.addDeviceLink}
+            >
+              <Ionicons name="albums-outline" size={16} color={COLORS.primary} />
+              <Text style={styles.addDeviceLinkText}>From Catalog</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push(`/care-stations/${careStation.id}/device/new` as any)}
+              style={styles.addDeviceLink}
+            >
+              <Ionicons name="add-circle-outline" size={16} color={COLORS.primary} />
+              <Text style={styles.addDeviceLinkText}>Custom</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {careStation.devices.length === 0 ? (
           <EmptyState
             icon="hardware-chip-outline"
             title="No devices tagged yet"
-            subtitle="Add each device in this briefcase and print its barcode tag."
-            action={{ label: 'Add Device', onPress: () => router.push(`/care-stations/${careStation.id}/device/new` as any) }}
+            subtitle="Add the standard kit from the catalog, or tag a custom device."
+            action={{ label: 'Add Standard Devices', onPress: () => router.push(`/care-stations/${careStation.id}/device/catalog` as any) }}
           />
         ) : (
           <View style={styles.deviceList}>
@@ -311,6 +320,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  addDeviceLinks: { flexDirection: 'row', gap: 16 },
   addDeviceLink: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   addDeviceLinkText: { fontSize: 13, fontWeight: '600', color: COLORS.primary },
   deviceList: {
