@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~4.0.1",
     "@expo/vector-icons": "^14.0.4",
     "@react-native-async-storage/async-storage": "2.1.0",
     "@react-native-community/datetimepicker": "^9.1.0",
@@ -43,6 +44,7 @@
     "react-native-screens": "~4.3.0",
     "react-native-svg": "15.8.0",
     "react-native-view-shot": "^3.8.0",
+    "react-native-web": "^0.19.13",
     "zod": "^3.23.8",
     "zustand": "^5.0.2"
   },
