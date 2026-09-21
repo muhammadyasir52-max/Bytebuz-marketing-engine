@@ -2,6 +2,7 @@
   "expo": {
     "name": "Bytebuz Marketing",
     "slug": "bytebuz-marketing-engine",
+    "owner": "careliner",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

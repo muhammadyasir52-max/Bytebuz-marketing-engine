@@ -31,8 +31,8 @@ jobs:
 
       - name: Configure EAS project (first time only)
         run: |
-          # Link or create the Expo project non-interactively
-          npx eas-cli build:configure --platform android --non-interactive || true
+          # Link or create the Expo project
+          npx eas-cli build:configure --platform android || true
 
       - name: Build Android APK
         run: |
