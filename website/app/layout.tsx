@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import Logo from "./Logo";
 import "./globals.css";
 
 const inter = Inter({
@@ -41,9 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
             <div className="flex h-16 items-center justify-between gap-4">
               <Link href="/" className="flex items-center gap-2 shrink-0">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-teal-700)] text-sm font-bold text-white">
-                  R
-                </span>
+                <Logo size={32} />
                 <span className="text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">
                   RHEAP
                 </span>
@@ -98,9 +97,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               <div className="lg:col-span-2">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--color-teal-700)] text-xs font-bold text-white">
-                    R
-                  </span>
+                  <Logo size={28} />
                   <span className="font-semibold text-[var(--color-ink)]">
                     RHEAP
                   </span>
