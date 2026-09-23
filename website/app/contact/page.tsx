@@ -37,19 +37,12 @@ export default function ContactPage() {
             Partnerships &amp; press
           </h2>
           <a
-            href="mailto:partnerships@rheap.org"
+            href="mailto:info@rheap.org"
             className="mt-2 inline-block text-[var(--color-teal-700)] hover:text-[var(--color-teal-900)]"
           >
-            partnerships@rheap.org
+            info@rheap.org
           </a>
         </div>
-      </div>
-
-      <div className="mt-6 rounded-xl bg-[var(--color-paper-subtle)] p-6 text-sm text-[var(--color-ink-soft)]">
-        These are placeholder addresses on the rheap.org domain. Once the
-        domain and mailboxes are set up, update them here — until then,
-        route submissions to whichever inbox the founding team is actually
-        monitoring.
       </div>
     </div>
   );
