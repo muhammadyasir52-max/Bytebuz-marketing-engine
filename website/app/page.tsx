@@ -138,7 +138,7 @@ export default function Home() {
           <h2 className="text-2xl font-semibold text-white sm:text-3xl">
             Help build RHEAP from the ground up
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-teal-50/90">
+          <p className="mx-auto mt-4 max-w-xl text-white/85">
             Membership is open to individuals — clinicians, researchers,
             students, technologists and anyone who supports safe,
             evidence-based Remote Health Examination in Pakistan.
@@ -146,7 +146,7 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/join"
-              className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-[var(--color-teal-900)] hover:bg-teal-50"
+              className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-[var(--color-teal-900)] hover:bg-[var(--color-teal-100)]"
             >
               Register your interest
             </Link>

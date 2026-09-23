@@ -1,18 +1,27 @@
 @import "tailwindcss";
 
+/*
+ * Brand palette: "Midnight Jade" — from the official RHEAP logo kit.
+ * Ground #0A1F1C, accent #2ED3A0. The --color-teal-* and --color-indigo-*
+ * variable names are kept as-is (renaming would mean touching every page)
+ * but now resolve to the brand's jade scale — there is no separate indigo
+ * in the brand kit, so those tokens are folded into the same jade family
+ * to keep a single-accent system.
+ */
 :root {
-  --color-ink: #0f2320;
-  --color-ink-soft: #3f5652;
+  --color-ink: #0a1f1c;
+  --color-ink-soft: #3f5a54;
   --color-paper: #ffffff;
-  --color-paper-subtle: #f3f7f6;
-  --color-teal-900: #0a3a37;
-  --color-teal-700: #0e5f59;
-  --color-teal-600: #12746c;
-  --color-teal-500: #17948a;
-  --color-teal-100: #e3f2f0;
-  --color-indigo-700: #372f8a;
-  --color-indigo-600: #4338ca;
-  --color-indigo-100: #eceafc;
+  --color-paper-subtle: #f3f7f5;
+  --color-teal-900: #0a1f1c;
+  --color-teal-700: #0b7a5e;
+  --color-teal-600: #159c79;
+  --color-teal-500: #1dbe90;
+  --color-teal-100: #e3f5ef;
+  --color-accent: #2ed3a0;
+  --color-indigo-700: #0f6b4f;
+  --color-indigo-600: #0b7a5e;
+  --color-indigo-100: #e3f5ef;
   --color-border: #dfe8e6;
 }
 
@@ -26,11 +35,12 @@
   --color-teal-600: var(--color-teal-600);
   --color-teal-500: var(--color-teal-500);
   --color-teal-100: var(--color-teal-100);
+  --color-accent: var(--color-accent);
   --color-indigo-700: var(--color-indigo-700);
   --color-indigo-600: var(--color-indigo-600);
   --color-indigo-100: var(--color-indigo-100);
   --color-border: var(--color-border);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-outfit);
 }
 
 body {

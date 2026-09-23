@@ -1,21 +1,51 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import Link from "next/link";
 import Logo from "./Logo";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
+const siteUrl = "https://rheap.org";
+const title = "RHEAP — Remote Health Examination Association Pakistan";
+const description =
+  "RHEAP is an independent, non-profit association advancing research, education and the safe, evidence-based use of Remote Health Examination (RHE) in Pakistan.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "RHEAP — Remote Health Examination Association Pakistan",
+    default: title,
     template: "%s — RHEAP",
   },
-  description:
-    "RHEAP is an independent, non-profit association advancing research, education and the safe, evidence-based use of Remote Health Examination (RHE) in Pakistan.",
+  description,
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  openGraph: {
+    title,
+    description,
+    url: siteUrl,
+    siteName: "RHEAP",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/og-image.png"],
+  },
 };
 
 const navLinks = [
@@ -29,7 +59,7 @@ const navLinks = [
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${outfit.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <a
           href="#main"
@@ -43,7 +73,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <div className="flex h-16 items-center justify-between gap-4">
               <Link href="/" className="flex items-center gap-2 shrink-0">
                 <Logo size={32} />
-                <span className="text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">
+                <span className="text-[16px] font-bold tracking-wide text-[var(--color-ink)]">
                   RHEAP
                 </span>
               </Link>
@@ -98,7 +128,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <div className="lg:col-span-2">
                 <div className="flex items-center gap-2">
                   <Logo size={28} />
-                  <span className="font-semibold text-[var(--color-ink)]">
+                  <span className="font-bold tracking-wide text-[var(--color-ink)]">
                     RHEAP
                   </span>
                 </div>
