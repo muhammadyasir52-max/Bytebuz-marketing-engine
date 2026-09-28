@@ -3,28 +3,35 @@
 import { useState, type FormEvent } from "react";
 
 const CONTACT_EMAIL = "info@rheap.org";
+const FORM_ENDPOINT = `https://formsubmit.co/ajax/${CONTACT_EMAIL}`;
 
 export default function JoinForm() {
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle"
+  );
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    const name = String(data.get("name") ?? "");
-    const email = String(data.get("email") ?? "");
-    const role = String(data.get("role") ?? "");
-    const city = String(data.get("city") ?? "");
-    const message = String(data.get("message") ?? "");
+    data.append("_subject", `RHEAP membership interest — ${data.get("name")}`);
+    data.append("_template", "table");
+    data.append("_captcha", "false");
 
-    const subject = encodeURIComponent(`RHEAP membership interest — ${name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nProfession / role: ${role}\nCity: ${city}\n\nMessage:\n${message}`
-    );
-
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-    setStatus("sent");
+    setStatus("sending");
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: data,
+      });
+      if (!res.ok) throw new Error("Submission failed");
+      setStatus("sent");
+      form.reset();
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -112,22 +119,33 @@ export default function JoinForm() {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-[var(--color-teal-700)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-teal-900)] sm:w-auto"
+        disabled={status === "sending"}
+        className="w-full rounded-md bg-[var(--color-teal-700)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-teal-900)] disabled:opacity-60 sm:w-auto"
       >
-        Send application
+        {status === "sending" ? "Sending…" : "Send application"}
       </button>
 
       {status === "sent" && (
         <p className="text-sm text-[var(--color-teal-700)]">
-          Your email client should have opened with your details filled in —
-          please review and send it to complete your application.
+          Thank you — your application has been sent to the RHEAP founding
+          team. We&apos;ll be in touch.
+        </p>
+      )}
+
+      {status === "error" && (
+        <p className="text-sm text-red-600">
+          Something went wrong sending your application. Please try again,
+          or email us directly at{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline">
+            {CONTACT_EMAIL}
+          </a>
+          .
         </p>
       )}
 
       <p className="text-xs text-[var(--color-ink-soft)]">
-        RHEAP doesn&apos;t yet have a live application system, so this opens
-        a pre-filled email to {CONTACT_EMAIL}. Applications are reviewed by
-        the Executive Committee per Rule 8 of the Rules &amp; Regulations.
+        Applications are sent directly to {CONTACT_EMAIL} and reviewed by the
+        Executive Committee per Rule 8 of the Rules &amp; Regulations.
       </p>
     </form>
   );
