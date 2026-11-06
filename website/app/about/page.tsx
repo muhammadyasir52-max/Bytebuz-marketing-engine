@@ -53,11 +53,11 @@ export default function AboutPage() {
           Founding status
         </h2>
         <p className="mt-2 text-[var(--color-ink-soft)] leading-relaxed">
-          RHEAP is currently being established. Muhammad Yasir is serving as
-          Convener and General Secretary (in formation), leading the
-          founding process. Under RHEAP&apos;s Rules, founding members will
-          elect the first Executive Committee at the Founding Meeting, which
-          will serve until the first Annual General Meeting.
+          RHEAP is currently being established, led by a Convener and
+          General Secretary (in formation) through the founding process.
+          Under RHEAP&apos;s Rules, founding members will elect the first
+          Executive Committee at the Founding Meeting, which will serve
+          until the first Annual General Meeting.
         </p>
       </div>
 
